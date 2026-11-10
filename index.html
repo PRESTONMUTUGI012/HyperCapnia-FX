@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ehaldart Global FX & Binary | Multimarket Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    body { background-color: #06090f; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; }
+    .bg-card { background-color: #0d131f; }
+    .border-neon { border-color: #00ff66; }
+    .text-neon { color: #00ff66; }
+    .bg-neon { background-color: #00ff66; }
+    .shadow-neon { box-shadow: 0 0 20px rgba(0, 255, 102, 0.35); }
+    .cyber-grid {
+      background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 102, 0.05) 0%, transparent 80%),
+                        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #06090f; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00ff66; }
+  </style>
+</head>
+<body class="min-h-screen md:h-screen flex flex-col overflow-x-hidden md:overflow-hidden text-sm">
+
+  <!-- EHALDART GLOBAL FX BRANDED SPLASH SCREEN -->
+  <div id="splash-screen" class="fixed inset-0 z-50 bg-[#06090f] cyber-grid flex flex-col items-center justify-center p-4 transition-opacity duration-700">
+    <div class="text-center space-y-5 max-w-lg">
+      
+      <!-- Glowing FX Brand Emblem -->
+      <div class="relative w-28 h-28 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full border-4 border-neon/20 animate-ping"></div>
+        <div class="w-24 h-24 rounded-2xl bg-card border-2 border-neon shadow-neon flex items-center justify-center transform rotate-3">
+          <span class="text-3xl font-black text-neon tracking-tighter">FX</span>
+        </div>
+      </div>
+
+      <!-- Institutional Typography matching brand visual -->
+      <div>
+        <h1 class="text-2xl md:text-4xl font-extrabold tracking-widest text-white uppercase drop-shadow-md">
+          EHALDART <span class="text-neon">GLOBAL FX</span> & BINARY
+        </h1>
+        <p class="text-xs text-cyan-400 tracking-widest mt-1.5 uppercase font-mono font-semibold">
+          Multimarket Terminal | By Jamal Ehaldart
+        </p>
+      </div>
+
+      <!-- Smart Welcoming Brief -->
+      <div class="bg-card/90 border border-neon/40 p-4 rounded-xl shadow-lg space-y-1.5 backdrop-blur-sm">
+        <h2 class="text-neon font-bold text-xs uppercase tracking-wider">⚡ Autonomous Institutional Engine Initialized</h2>
+        <p class="text-[11px] text-gray-300 leading-relaxed">
+          Smart Data streams connected. A+ Matches Winrate filters, Over 7 / Under 2 recovery engines, and 3% risk controls are online. Welcome, trader.
+        </p>
+      </div>
+
+      <!-- Glowing Neon Bloodline Loading Bar -->
+      <div class="w-full bg-gray-950 h-2 rounded-full overflow-hidden border border-neon/30 shadow-inner p-0.5">
+        <div id="splash-progress" class="bg-gradient-to-r from-emerald-600 to-neon h-full w-0 transition-all duration-200 rounded-full shadow-neon"></div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- HEADER / BRANDING -->
+  <header class="bg-card border-b border-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center space-x-3">
+      <div class="w-3 h-3 rounded-full bg-neon shadow-neon animate-pulse"></div>
+      <div>
+        <h1 class="text-base md:text-lg font-bold tracking-wider text-neon">APEXFLOW MARKET DOLLAR HUNTERS</h1>
+        <p class="text-[10px] text-gray-400 tracking-wide">Ehaldart Global FX & Binary • <span class="text-emerald-400">Jamal Ehaldart Desk</span></p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-4">
+      <button id="btn-login-deriv" class="bg-neon hover:bg-emerald-400 text-black font-bold px-3 py-1.5 rounded text-xs transition shadow-neon">
+        🔑 Connect Deriv Account
+      </button>
+      <div class="text-right">
+        <div class="text-[10px] text-gray-400">Account ID</div>
+        <div id="ui-account-id" class="font-mono text-xs md:text-sm font-semibold text-white">DOT95101040</div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-gray-400">Balance</div>
+        <div id="ui-balance" class="font-mono text-sm md:text-base font-bold text-neon">$0.00</div>
+      </div>
+      <div class="bg-emerald-900 text-neon border border-neon font-bold px-2 py-1 rounded text-[10px] md:text-xs flex items-center space-x-1">
+        <span>● LIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-full lg:w-80 bg-card border-b lg:border-b-0 lg:border-r border-gray-800 p-4 flex flex-col space-y-3 shrink-0">
+      <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Deriv Markets (All Active Synced)</h2>
+      <select id="select-market" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-neon outline-none text-xs">
+        <option value="frxXAUUSD">Spot Gold (XAU/USD)</option>
+        <option value="R_100">Volatility 100 Index (R_100)</option>
+        <option value="frxEURUSD">EUR/USD</option>
+        <option value="frxGBPUSD">GBP/USD</option>
+      </select>
+
+      <!-- ADVANCED AI SPEED BOATS PANEL -->
+      <div class="bg-gray-900 border border-neon/50 p-3 rounded space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-neon uppercase">⚡ AI Millisecond Speed Boats</span>
+          <span id="ai-status-badge" class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-mono">STANDBY</span>
+        </div>
+        <select id="select-speed-boat" class="w-full bg-gray-950 border border-gray-700 rounded p-1.5 text-white text-xs outline-none focus:border-neon">
+          <option value="matches">🚤 A+ Matches Speed Boat (High Winrate Frequency)</option>
+          <option value="mtf_macd_synthetic">🚤 15M MACD + 1M Trend-Aligner Speed Boat (Synthetic)</option>
+          <option value="adaptive_smc_sr">🚤 Adaptive SMC & S&R Killzone Bot (XAU/USD & Forex Aware)</option>
+          <option value="rise_fall">🚤 Rise / Fall Speed Boat (Momentum)</option>
+          <option value="even_odd">🚤 Even / Odd Speed Boat (Reversion)</option>
+          <option value="differs">🚤 Differs Speed Boat (High Winrate)</option>
+          <option value="over3_under6">🚤 Over 3 / Under 6 Speed Boat (Probability)</option>
+        </select>
+        
+        <!-- AUTO STAKE TOGGLE -->
+        <div class="flex items-center justify-between bg-gray-950 p-2 rounded border border-gray-800">
+          <label for="toggle-auto-stake" class="text-xs text-neon font-bold cursor-pointer">Auto Balance Risk (3% Rule)</label>
+          <input type="checkbox" id="toggle-auto-stake" checked class="w-4 h-4 accent-emerald-500 cursor-pointer">
+        </div>
+
+        <button id="btn-toggle-ai" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1.5 rounded text-xs transition">
+          Launch Speed Boat
+        </button>
+      </div>
+
+      <!-- LIVE KILLZONE SESSION COUNTDOWN WIDGET -->
+      <div class="bg-gray-900 border border-gray-700 p-3 rounded space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-gray-300 uppercase tracking-wider">⏳ Killzone Session Clock</span>
+          <span id="session-status-pill" class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded font-mono">OFF-SESSION</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-gray-950 p-2 rounded border border-gray-800">
+            <span class="text-gray-500 block text-[10px]">Active Session</span>
+            <span id="active-session-name" class="font-bold text-neon truncate block">Waiting...</span>
+          </div>
+          <div class="bg-gray-950 p-2 rounded border border-gray-800">
+            <span class="text-gray-500 block text-[10px]">Time Remaining</span>
+            <span id="session-countdown" class="font-bold text-white font-mono">--:--:--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE AI CONFLUENCE & WINRATE HEATMAP -->
+      <div class="bg-gray-900 border border-emerald-500/40 p-3 rounded space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🎯 Confluence Heatmap</span>
+          <span id="confluence-score" class="text-[10px] bg-emerald-950 text-neon border border-emerald-500 px-1.5 py-0.5 rounded font-mono font-bold">88.4% WINRATE</span>
+        </div>
+        <div class="space-y-1 text-[11px]">
+          <div class="flex justify-between text-gray-400">
+            <span>1M Momentum:</span>
+            <span id="conf-1m" class="text-neon font-mono font-semibold">BULLISH</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>5M Structure:</span>
+            <span id="conf-5m" class="text-neon font-mono font-semibold">ALIGNED</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>15M Killzone Bias:</span>
+            <span id="conf-15m" class="text-emerald-400 font-mono font-semibold">INSTITUTIONAL</span>
+          </div>
+        </div>
+        <div class="w-full bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800">
+          <div id="confluence-bar" class="bg-neon h-full w-[88%] transition-all duration-500"></div>
+        </div>
+      </div>
+
+      <!-- ANALYSIS TOOLS PANEL -->
+      <div class="bg-gray-900 border border-gray-700 p-3 rounded space-y-2">
+        <h2 class="text-xs font-bold text-gray-300 uppercase tracking-wider">📈 Market Analysis Tools</h2>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-gray-950 p-2 rounded border border-gray-800">
+            <span class="text-gray-500 block text-[10px]">Trend Bias</span>
+            <span id="analysis-trend" class="font-bold text-neon">Analyzing...</span>
+          </div>
+          <div class="bg-gray-950 p-2 rounded border border-gray-800">
+            <span class="text-gray-500 block text-[10px]">Momentum RSI</span>
+            <span id="analysis-rsi" class="font-bold text-white">50.0</span>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1">Execution Strategy</h2>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="mode-single" class="bg-gray-800 border border-neon text-neon py-1.5 rounded text-xs font-semibold">Single Order</button>
+        <button id="mode-bulk" class="bg-gray-900 border border-gray-700 text-gray-400 py-1.5 rounded text-xs font-semibold hover:border-gray-500">Bulk Multi-Shot</button>
+      </div>
+
+      <div class="border-t border-gray-800 pt-3 mt-auto">
+        <button id="btn-cashier" class="w-full bg-gray-900 border border-gray-700 hover:border-neon text-gray-300 py-2 rounded text-xs text-left px-3 flex justify-between items-center">
+          <span>Deposit & Cashier</span>
+          <span class="text-neon">➔</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CENTER AREA -->
+    <main class="flex-1 flex flex-col bg-gray-950 overflow-hidden min-h-[500px]">
+      <div class="flex-1 bg-black relative min-h-[300px]" id="tv_chart_container"></div>
+
+      <div class="bg-card border-t border-gray-800 p-4 grid grid-cols-1 md:grid-cols-12 gap-4">
+        
+        <!-- TRADING DESK -->
+        <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-gray-800 pb-4 md:pb-0 md:pr-4 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-gray-400 uppercase">Trade Control Desk</span>
+            <span id="market-price" class="font-mono text-neon font-bold text-base">---.--</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">Stake / Amount ($)</label>
+              <input type="number" id="input-stake" value="10" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-neon outline-none font-mono">
+            </div>
+            <div>
+              <label class="text-xs text-gray-400 block mb-1">Duration (Ticks / Secs)</label>
+              <div class="flex">
+                <input type="number" id="input-duration" value="5" class="w-full bg-gray-900 border border-gray-700 rounded-l p-2 text-white focus:border-neon outline-none font-mono">
+                <select id="input-duration-unit" class="bg-gray-800 border border-l-0 border-gray-700 rounded-r px-2 text-gray-300 text-xs">
+                  <option value="t">Ticks</option>
+                  <option value="s">Secs</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="bulk-controls" class="hidden space-y-1">
+            <label class="text-xs text-neon block">Bulk Contract Multiplier</label>
+            <input type="number" id="input-bulk-count" value="3" min="1" max="10" class="w-full bg-gray-900 border border-neon rounded p-1.5 text-white outline-none font-mono text-xs">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <button id="btn-trade-higher" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded shadow-lg transition flex items-center justify-center space-x-1">
+              <span>HIGHER (CALL)</span>
+            </button>
+            <button id="btn-trade-lower" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded shadow-lg transition flex items-center justify-center space-x-1">
+              <span>LOWER (PUT)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LOGS CONSOLE -->
+        <div class="md:col-span-7 flex flex-col h-44 md:h-auto">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-bold text-gray-400 uppercase">Live WebSocket Console & Speed Boat Logs</span>
+            <button id="btn-clear-logs" class="text-xs text-gray-500 hover:text-gray-300">Clear</button>
+          </div>
+          <div id="logs-container" class="flex-1 bg-gray-950 border border-gray-800 rounded p-2 font-mono text-xs overflow-y-auto space-y-1">
+            <div class="text-gray-500">[System] Welcome to Ehaldart Global FX Multimarket Terminal. Managed by Jamal Ehaldart.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: RISK MANAGEMENT -->
+    <aside class="w-full lg:w-72 bg-card border-t lg:border-t-0 lg:border-l border-gray-800 p-4 flex flex-col space-y-4 shrink-0">
+      <h2 class="text-xs font-bold text-neon uppercase tracking-wider border-b border-gray-800 pb-2">Trader Protection Desk</h2>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-400 block mb-1">Target Daily Profit (+10% Rule)</label>
+          <input type="number" id="risk-target-profit" value="10" disabled class="w-full bg-gray-900 border border-emerald-500 text-neon rounded p-1.5 font-mono text-xs outline-none font-bold">
+        </div>
+        <div>
+          <label class="text-xs text-gray-400 block mb-1">Max Daily Stop Loss ($) [Circuit Breaker]</label>
+          <input type="number" id="risk-max-loss" value="30" class="w-full bg-gray-900 border border-gray-700 rounded p-1.5 text-white font-mono text-xs focus:border-neon outline-none">
+        </div>
+        <div>
+          <label class="text-xs text-gray-400 block mb-1">Account Risk % (3% Rule)</label>
+          <input type="number" id="risk-stake-percent" value="3" min="1" max="10" class="w-full bg-gray-900 border border-gray-700 rounded p-1.5 text-white font-mono text-xs focus:border-neon outline-none">
+        </div>
+      </div>
+
+      <div class="bg-gray-900 p-3 rounded border border-gray-800 space-y-2 mt-2">
+        <div class="flex justify-between text-xs">
+          <span class="text-gray-400">Active Risk Model:</span>
+          <span id="calc-rec-stake" class="text-white font-mono font-bold">3.0% Balance</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span class="text-gray-400">Profit Target:</span>
+          <span class="text-neon font-mono font-bold">+10.0% Session</span>
+        </div>
+      </div>
+
+      <button id="btn-calc-apply" class="w-full bg-gray-800 hover:bg-gray-700 text-neon border border-neon py-1.5 rounded text-xs font-bold">
+        Lock Risk Parameters
+      </button>
+
+      <button id="btn-emergency-flatten" class="w-full bg-rose-900 hover:bg-rose-800 text-white border border-rose-600 py-2 rounded text-xs font-bold tracking-wider mt-auto">
+        🚨 EMERGENCY PANIC FLATTEN
+      </button>
+    </aside>
+
+  </div>
+
+  <script src="derivApi.js"></script>
+  <script src="aiBotsEngine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
